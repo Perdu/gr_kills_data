@@ -8,8 +8,39 @@ sudo mariadb -u root < create_db.sql && sudo mariadb -u root gr_kills < load_dat
 
 # Kills by weapon:
 ```sql
-select name, count(*) as a from kill_logs join weapon on weapon_id = weapon.id group by weapon_id order by a desc;
+select name, count(*) as kills from kill_logs join weapon on weapon_id = weapon.id group by weapon_id order by kills desc;
 ```
+
+```
++-------------------+-------+
+| name              | kills |
++-------------------+-------+
+| katana            | 46405 |
+| rifle             | 32215 |
+| sniper            | 25343 |
+| dualUzi           | 18426 |
+| knife             | 17944 |
+| smg               | 16726 |
+| minigun           | 13645 |
+| shotgun           | 11805 |
+| gauntlet          | 11504 |
+| dualpistol        |  9549 |
+| rocket            |  8263 |
+| revolver          |  7886 |
+| flamethrower      |  6618 |
+| arrow             |  6195 |
+| projectileGrenade |  5499 |
+| fusionRifle       |  4491 |
+| shuriken          |  2979 |
+| crossbowBolt      |  2074 |
+| riotShield        |   962 |
+| fireBurn          |   912 |
+| projectileSmoke   |   518 |
+| grappleHook       |    21 |
+| bow               |    20 |
++-------------------+-------+
+```
+
 
 # Kills of weapon:
 ```sql
