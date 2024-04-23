@@ -44,13 +44,16 @@ select name, count(*) as kills from kill_logs join weapon on weapon_id = weapon.
 
 # Kills of weapon:
 ```sql
-select name, count(*) as a from kill_logs join weapon on weapon_killed_id = weapon.id group by weapon_killed_id order by a desc;
+select name, count(*) as deaths from kill_logs join weapon on weapon_killed_id = weapon.id group by weapon_killed_id order by deaths desc;
 ```
+
+
 
 # Nb games:
 ```sql
 select count(distinct game_id) from kill_logs;
 ```
+1806
 
 # Fill kill_logs_full (too long):
 ```sql
@@ -61,13 +64,17 @@ INSERT INTO kill_logs_full (id, killer_hash, killed_hash, game_id, weapon_id, ki
 ```sql
 select count(*) from kill_logs where killed_hash not in (select unique killer_hash from kill_logs);
 ```
+66205
 
 # Nb of killed players who don't have a kill:
 ```sql
 select count(distinct killed_hash) from kill_logs where killed_hash not in (select unique killer_hash from kill_logs);
+```
 /
+```
 select count(distinct killed_hash) from kill_logs;
 ```
+7751/12110 = 64% (!!)
 
 # kdr (ordering works but doesn't take null fields into account):
 ```sql
