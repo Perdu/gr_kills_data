@@ -1,3 +1,4 @@
+- add map table + make a game_type table
 - Replace hashes with ints
 - remove players who didn't get a single kill (for kdr computation; will still be useful e.g. for BR)
 - update weapon_id row to group flamethrower and fireburn
