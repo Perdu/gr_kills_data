@@ -64,7 +64,7 @@ INSERT INTO kill_logs_full (id, killer_hash, killed_hash, game_id, weapon_id, ki
 ```sql
 select count(*) from kill_logs where killed_hash not in (select unique killer_hash from kill_logs);
 ```
-66205
+66205/250000 = 26.5% (!)
 
 # Nb of killed players who don't have a kill:
 ```sql
