@@ -29,9 +29,11 @@ for game in games:
         row_id = row[0]
         killed_hash = row[1]
         kill_date = row[2]
+        # Select weapon used in last kill before that death (in the same game)
         mycursor.execute(f"SELECT weapon_id, MAX(kill_date) FROM kill_logs WHERE game_id = {game_id} AND killer_hash = '{killed_hash}' AND kill_date <= '{kill_date}'")
         weapon = mycursor.fetchone()[0]
         if weapon is None:
+            # If none found, select weapon used in first kill after that death instead
             mycursor.execute(f"SELECT weapon_id, MIN(kill_date) FROM kill_logs WHERE game_id = {game_id} AND killer_hash = '{killed_hash}' AND kill_date > '{kill_date}'")
             weapon = mycursor.fetchone()[0]
         print(weapon)
