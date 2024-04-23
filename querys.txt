@@ -11,9 +11,6 @@ select name, count(*) as a from kill_logs join weapon on weapon_killed_id = weap
 ** Nb games:
 select count(distinct game_id) from kill_logs;
 
-** Add weapon_killed_id (wrong):
-update kill_logs set weapon_killed_id = (SELECT weapon_id FROM kill_logs WHERE kill_date = MAX (SELECT kill_date
-
 ** Fill kill_logs_full (too long):
 INSERT INTO kill_logs_full (id, killer_hash, killed_hash, game_id, weapon_id, kill_date, weapon_killed_id) select id, killer_hash, killed_hash as a, game_id, weapon_id, kill_date b, (SELECT weapon_id from kill_logs where killer_hash = a and kill_date = (SELECT MAX(kill_date) from kill_logs where killer_hash = a and kill_date < b) limit 1) from kill_logs;
 
