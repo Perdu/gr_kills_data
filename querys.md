@@ -47,6 +47,33 @@ select name, count(*) as kills from kill_logs join weapon on weapon_id = weapon.
 select name, count(*) as deaths from kill_logs join weapon on weapon_killed_id = weapon.id group by weapon_killed_id order by deaths desc;
 ```
 
+```
++-------------------+--------+
+| name              | deaths |
++-------------------+--------+
+| rifle             |  17999 |
+| katana            |  17840 |
+| dualUzi           |  14795 |
+| sniper            |  14030 |
+| smg               |  10983 |
+| minigun           |   8566 |
+| shotgun           |   7478 |
+| knife             |   7191 |
+| rocket            |   6724 |
+| dualpistol        |   6663 |
+| revolver          |   6610 |
+| flamethrower      |   6527 |
+| gauntlet          |   5724 |
+| arrow             |   4540 |
+| projectileGrenade |   3653 |
+| fusionRifle       |   2595 |
+| crossbowBolt      |   2075 |
+| fireBurn          |   1121 |
+| shuriken          |   1112 |
+| projectileSmoke   |    725 |
+| riotShield        |    597 |
++-------------------+--------+
+```
 
 
 # Nb games:
