@@ -76,7 +76,7 @@ select count(distinct killed_hash) from kill_logs;
 ```
 7751/12110 = 64% (!!)
 
-# kdr (ordering works but doesn't take null fields into account):
+# kdr (overestimated as we don't know know killed weapon for a lot of rows):
 ```sql
 CREATE TEMPORARY TABLE temp_kills_by_weapon AS select name, count(*) as a from kill_logs join weapon on weapon_id = weapon.id group by weapon_id order by a desc;
 CREATE TEMPORARY TABLE temp_kills_of_weapon AS select name, count(*) as a from kill_logs join weapon on weapon_killed_id = weapon.id group by weapon_killed_id order by a desc;
@@ -85,7 +85,63 @@ DROP TEMPORARY TABLE temp_kills_by_weapon;
 DROP TEMPORARY TABLE temp_kills_of_weapon;
 ```
 
+```
++-------------------+-------+-------+------------+
+| name              | a     | a     | kill_ratio |
++-------------------+-------+-------+------------+
+| shuriken          |  2979 |  1112 |     2.6790 |
+| katana            | 46405 | 17840 |     2.6012 |
+| knife             | 17944 |  7191 |     2.4953 |
+| gauntlet          | 11504 |  5724 |     2.0098 |
+| sniper            | 25343 | 14030 |     1.8063 |
+| rifle             | 32215 | 17999 |     1.7898 |
+| fusionRifle       |  4491 |  2595 |     1.7306 |
+| riotShield        |   962 |   597 |     1.6114 |
+| minigun           | 13645 |  8566 |     1.5929 |
+| shotgun           | 11805 |  7478 |     1.5786 |
+| smg               | 16726 | 10983 |     1.5229 |
+| projectileGrenade |  5499 |  3653 |     1.5053 |
+| dualpistol        |  9549 |  6663 |     1.4331 |
+| arrow             |  6195 |  4540 |     1.3645 |
+| dualUzi           | 18426 | 14795 |     1.2454 |
+| rocket            |  8263 |  6724 |     1.2289 |
+| revolver          |  7886 |  6610 |     1.1930 |
+| flamethrower      |  6618 |  6527 |     1.0139 |
+| crossbowBolt      |  2074 |  2075 |     0.9995 |
+| fireBurn          |   912 |  1121 |     0.8136 |
+| projectileSmoke   |   518 |   725 |     0.7145 |
++-------------------+-------+-------+------------+
+```
+
 # kdr, without rows of players that didn't get a kill
 ```sql
 CREATE TEMPORARY TABLE temp_kills_by_weapon AS select name, count(*) as a from kill_logs join weapon on weapon_id = weapon.id where weapon_killed_id is not null group by weapon_id order by a desc; CREATE TEMPORARY TABLE temp_kills_of_weapon AS select name, count(*) as a from kill_logs join weapon on weapon_killed_id = weapon.id group by weapon_killed_id order by a desc; SELECT k1.name, k1.a, k2.a, k1.a / k2.a AS kill_ratio FROM temp_kills_by_weapon k1 JOIN temp_kills_of_weapon k2 ON k1.name = k2.name ORDER BY kill_ratio DESC; DROP TEMPORARY TABLE temp_kills_by_weapon; DROP TEMPORARY TABLE temp_kills_of_weapon;
+```
+
+```
++-------------------+-------+-------+------------+
+| name              | a     | a     | kill_ratio |
++-------------------+-------+-------+------------+
+| sniper            | 16264 | 14030 |     1.1592 |
+| minigun           |  9609 |  8566 |     1.1218 |
+| rifle             | 20172 | 17999 |     1.1207 |
+| projectileGrenade |  4066 |  3653 |     1.1131 |
+| shotgun           |  8232 |  7478 |     1.1008 |
+| katana            | 18622 | 17840 |     1.0438 |
+| knife             |  7391 |  7191 |     1.0278 |
+| dualpistol        |  6799 |  6663 |     1.0204 |
+| smg               | 10962 | 10983 |     0.9981 |
+| gauntlet          |  5665 |  5724 |     0.9897 |
+| arrow             |  4398 |  4540 |     0.9687 |
+| rocket            |  6362 |  6724 |     0.9462 |
+| shuriken          |  1049 |  1112 |     0.9433 |
+| revolver          |  6207 |  6610 |     0.9390 |
+| fusionRifle       |  2392 |  2595 |     0.9218 |
+| dualUzi           | 12371 | 14795 |     0.8362 |
+| crossbowBolt      |  1375 |  2075 |     0.6627 |
+| flamethrower      |  4199 |  6527 |     0.6433 |
+| riotShield        |   373 |   597 |     0.6248 |
+| projectileSmoke   |   407 |   725 |     0.5614 |
+| fireBurn          |   604 |  1121 |     0.5388 |
++-------------------+-------+-------+------------+
 ```
