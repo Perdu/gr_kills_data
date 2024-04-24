@@ -386,3 +386,14 @@ Arena:
 ```
 
 Other game types don't make sense due to low amount of data and large amount of players without kills
+
+
+# How many time do players who never get kills die before leaving, on average?
+```sql
+CREATE TEMPORARY TABLE temp_nb_deaths AS select distinct killed_hash, count(*) as nb_deaths from kill_logs where killed_hash not in (select unique killer_hash from kill_logs) group by killed_hash;
+SELECT AVG(nb_deaths) from temp_nb_deaths;
+DROP TEMPORARY TABLE temp_nb_deaths;
+```
+8.5415
+
+Or just using above results 66205/7751.
