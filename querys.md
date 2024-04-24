@@ -93,6 +93,42 @@ select count(*) from kill_logs where killed_hash not in (select unique killer_ha
 ```
 66205/250000 = 26.5% (!)
 
+By map type:
+```sql
+CREATE TEMPORARY TABLE temp_rows AS select count(*) as nb_kill_rows_without_kill from kill_logs join game_data on kill_logs.game_id = game_data.id join maps on game_data.map = maps.id where maps.type = 1 and killed_hash not in (select unique killer_hash from kill_logs); CREATE TEMPORARY TABLE temp_total_rows AS select count(*) as nb_kill_rows from kill_logs join game_data on kill_logs.game_id = game_data.id join maps on game_data.map = maps.id where maps.type = 1; SELECT temp_rows.nb_kill_rows_without_kill, temp_total_rows.nb_kill_rows, temp_rows.nb_kill_rows_without_kill/temp_total_rows.nb_kill_rows as ratio FROM temp_rows, temp_total_rows; DROP TEMPORARY TABLE temp_rows; DROP TEMPORARY TABLE temp_total_rows;
+
+CREATE TEMPORARY TABLE temp_rows AS select count(*) as nb_kill_rows_without_kill from kill_logs join game_data on kill_logs.game_id = game_data.id join maps on game_data.map = maps.id where maps.type = 2 and killed_hash not in (select unique killer_hash from kill_logs); CREATE TEMPORARY TABLE temp_total_rows AS select count(*) as nb_kill_rows from kill_logs join game_data on kill_logs.game_id = game_data.id join maps on game_data.map = maps.id where maps.type = 2; SELECT temp_rows.nb_kill_rows_without_kill, temp_total_rows.nb_kill_rows, temp_rows.nb_kill_rows_without_kill/temp_total_rows.nb_kill_rows as ratio FROM temp_rows, temp_total_rows; DROP TEMPORARY TABLE temp_rows; DROP TEMPORARY TABLE temp_total_rows;
+
+CREATE TEMPORARY TABLE temp_rows AS select count(*) as nb_kill_rows_without_kill from kill_logs join game_data on kill_logs.game_id = game_data.id join maps on game_data.map = maps.id where maps.type = 3 and killed_hash not in (select unique killer_hash from kill_logs); CREATE TEMPORARY TABLE temp_total_rows AS select count(*) as nb_kill_rows from kill_logs join game_data on kill_logs.game_id = game_data.id join maps on game_data.map = maps.id where maps.type = 3; SELECT temp_rows.nb_kill_rows_without_kill, temp_total_rows.nb_kill_rows, temp_rows.nb_kill_rows_without_kill/temp_total_rows.nb_kill_rows as ratio FROM temp_rows, temp_total_rows; DROP TEMPORARY TABLE temp_rows; DROP TEMPORARY TABLE temp_total_rows;
+```
+
+Arena:
+```
++---------------------------+--------------+--------+
+| nb_kill_rows_without_kill | nb_kill_rows | ratio  |
++---------------------------+--------------+--------+
+|                      3971 |       137719 | 0.0288 |
++---------------------------+--------------+--------+
+```
+
+Hub:
+```
++---------------------------+--------------+--------+
+| nb_kill_rows_without_kill | nb_kill_rows | ratio  |
++---------------------------+--------------+--------+
+|                     53443 |        87290 | 0.6122 |
++---------------------------+--------------+--------+
+```
+
+BR:
+```
++---------------------------+--------------+--------+
+| nb_kill_rows_without_kill | nb_kill_rows | ratio  |
++---------------------------+--------------+--------+
+|                      8789 |        24986 | 0.3518 |
++---------------------------+--------------+--------+
+```
+
 # Nb of killed players who don't have a kill:
 ```sql
 select count(distinct killed_hash) from kill_logs where killed_hash not in (select unique killer_hash from kill_logs);
@@ -308,3 +344,39 @@ BR:
 | projectileSmoke   |    6 |
 +-------------------+------+
 ```
+
+# kdr by game type, without rows of players that didn't get a kill
+```sql
+CREATE TEMPORARY TABLE temp_kills_by_weapon AS select weapon.name, count(*) as a from kill_logs join weapon on weapon_id = weapon.id join game_data on kill_logs.game_id = game_data.id join maps on game_data.map = maps.id where maps.type = 1 AND weapon_killed_id is not null group by weapon_id order by a desc; CREATE TEMPORARY TABLE temp_kills_of_weapon AS select weapon.name, count(*) as a from kill_logs join weapon on weapon_killed_id = weapon.id join game_data on kill_logs.game_id = game_data.id join maps on game_data.map = maps.id where maps.type = 1 group by weapon_killed_id order by a desc; SELECT k1.name, k1.a, k2.a, k1.a / k2.a AS kill_ratio FROM temp_kills_by_weapon k1 JOIN temp_kills_of_weapon k2 ON k1.name = k2.name ORDER BY kill_ratio DESC; DROP TEMPORARY TABLE temp_kills_by_weapon; DROP TEMPORARY TABLE temp_kills_of_weapon;
+```
+
+Arena:
+```
++-------------------+-------+-------+------------+
+| name              | a     | a     | kill_ratio |
++-------------------+-------+-------+------------+
+| sniper            | 13467 | 11431 |     1.1781 |
+| shotgun           |  6828 |  5916 |     1.1542 |
+| minigun           |  7833 |  6905 |     1.1344 |
+| projectileGrenade |  3805 |  3406 |     1.1171 |
+| rifle             | 16376 | 14797 |     1.1067 |
+| revolver          |  5756 |  5598 |     1.0282 |
+| smg               |  9184 |  8957 |     1.0253 |
+| dualpistol        |  5989 |  5892 |     1.0165 |
+| fusionRifle       |  1677 |  1663 |     1.0084 |
+| gauntlet          |  4377 |  4382 |     0.9989 |
+| arrow             |  4017 |  4083 |     0.9838 |
+| rocket            |  5990 |  6131 |     0.9770 |
+| knife             |  5271 |  5484 |     0.9612 |
+| katana            | 12241 | 12738 |     0.9610 |
+| dualUzi           | 10977 | 12786 |     0.8585 |
+| shuriken          |   601 |   714 |     0.8417 |
+| crossbowBolt      |  1196 |  1763 |     0.6784 |
+| flamethrower      |  3703 |  5751 |     0.6439 |
+| fireBurn          |   540 |   920 |     0.5870 |
+| riotShield        |   238 |   417 |     0.5707 |
+| projectileSmoke   |   374 |   706 |     0.5297 |
++-------------------+-------+-------+------------+
+```
+
+Other game types don't make sense due to low amount of data and large amount of players without kills
