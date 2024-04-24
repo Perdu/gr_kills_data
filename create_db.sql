@@ -23,3 +23,11 @@ CREATE TABLE IF NOT EXISTS maps (
     name VARCHAR(255) NOT NULL,
     type INT
 );
+
+CREATE TABLE IF NOT EXISTS game_data (
+    id INT PRIMARY KEY,
+    map INT NOT NULL,
+    is_private INT NOT NULL,
+    date DATETIME NOT NULL,
+    FOREIGN KEY (map) REFERENCES maps(id)
+);

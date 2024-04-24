@@ -23,3 +23,10 @@ LINES TERMINATED BY '\n'
 IGNORE 1 LINES
 (id, name, type);
 
+LOAD DATA INFILE 'game_data.csv'
+INTO TABLE game_data
+FIELDS TERMINATED BY ','
+ENCLOSED BY '"'
+LINES TERMINATED BY '\n'
+IGNORE 1 LINES
+(id, map, is_private, date);
