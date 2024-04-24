@@ -17,3 +17,9 @@ CREATE TABLE IF NOT EXISTS kill_logs (
     weapon_killed_id INT NULL,
     FOREIGN KEY (weapon_id) REFERENCES weapon(id)
 );
+
+CREATE TABLE IF NOT EXISTS maps (
+    id INT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    type INT
+);
