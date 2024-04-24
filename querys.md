@@ -1,3 +1,9 @@
+# Prepare files:
+```bash
+sudo cp {250k_with_gameid.csv,weapons_export_2024-04-22_081519.csv,maps,game_data}.csv /var/lib/mysql/gr_kills/
+sudo chmod a+r /var/lib/mysql/gr_kills/{250k_with_gameid.csv,weapons_export_2024-04-22_081519.csv,maps,game_data}.csv
+```
+
 # Recreate db:
 ```
 drop table kill_logs; drop table weapon;
