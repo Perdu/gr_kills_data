@@ -103,6 +103,47 @@ select count(distinct killed_hash) from kill_logs;
 ```
 7751/12110 = 64% (!!)
 
+By map type:
+```sql
+CREATE TEMPORARY TABLE temp_players AS select count(distinct killed_hash) as nb_killed_players_without_kill from kill_logs join game_data on kill_logs.game_id = game_data.id join maps on game_data.map = maps.id where maps.type = 1 and killed_hash not in (select unique killer_hash from kill_logs);
+CREATE TEMPORARY TABLE temp_total_players AS select count(distinct killed_hash) as nb_killed_players from kill_logs join game_data on kill_logs.game_id = game_data.id join maps on game_data.map = maps.id where maps.type = 1;
+SELECT temp_players.nb_killed_players_without_kill, temp_total_players.nb_killed_players, temp_players.nb_killed_players_without_kill/temp_total_players.nb_killed_players as ratio FROM temp_players, temp_total_players;
+DROP TEMPORARY TABLE temp_players;
+DROP TEMPORARY TABLE temp_total_players;
+```
+```sql
+CREATE TEMPORARY TABLE temp_players AS select count(distinct killed_hash) as nb_killed_players_without_kill from kill_logs join game_data on kill_logs.game_id = game_data.id join maps on game_data.map = maps.id where maps.type = 2 and killed_hash not in (select unique killer_hash from kill_logs); CREATE TEMPORARY TABLE temp_total_players AS select count(distinct killed_hash) as nb_killed_players from kill_logs join game_data on kill_logs.game_id = game_data.id join maps on game_data.map = maps.id where maps.type = 2; SELECT temp_players.nb_killed_players_without_kill, temp_total_players.nb_killed_players, temp_players.nb_killed_players_without_kill/temp_total_players.nb_killed_players as ratio FROM temp_players, temp_total_players; DROP TEMPORARY TABLE temp_players; DROP TEMPORARY TABLE temp_total_players;
+
+CREATE TEMPORARY TABLE temp_players AS select count(distinct killed_hash) as nb_killed_players_without_kill from kill_logs join game_data on kill_logs.game_id = game_data.id join maps on game_data.map = maps.id where maps.type = 3 and killed_hash not in (select unique killer_hash from kill_logs); CREATE TEMPORARY TABLE temp_total_players AS select count(distinct killed_hash) as nb_killed_players from kill_logs join game_data on kill_logs.game_id = game_data.id join maps on game_data.map = maps.id where maps.type = 3; SELECT temp_players.nb_killed_players_without_kill, temp_total_players.nb_killed_players, temp_players.nb_killed_players_without_kill/temp_total_players.nb_killed_players as ratio FROM temp_players, temp_total_players; DROP TEMPORARY TABLE temp_players; DROP TEMPORARY TABLE temp_total_players;
+```
+
+Arena:
+```
++--------------------------------+-------------------+--------+
+| nb_killed_players_without_kill | nb_killed_players | ratio  |
++--------------------------------+-------------------+--------+
+|                            517 |              2771 | 0.1866 |
++--------------------------------+-------------------+--------+
+```
+Hub:
+```
++--------------------------------+-------------------+--------+
+| nb_killed_players_without_kill | nb_killed_players | ratio  |
++--------------------------------+-------------------+--------+
+|                           6442 |              8962 | 0.7188 |
++--------------------------------+-------------------+--------+
+```
+BR:
+```
++--------------------------------+-------------------+--------+
+| nb_killed_players_without_kill | nb_killed_players | ratio  |
++--------------------------------+-------------------+--------+
+|                           1198 |              2801 | 0.4277 |
++--------------------------------+-------------------+--------+
+```
+
+
+
 # kdr (overestimated as we don't know know killed weapon for a lot of rows):
 ```sql
 CREATE TEMPORARY TABLE temp_kills_by_weapon AS select name, count(*) as a from kill_logs join weapon on weapon_id = weapon.id group by weapon_id order by a desc;
@@ -171,4 +212,99 @@ CREATE TEMPORARY TABLE temp_kills_by_weapon AS select name, count(*) as a from k
 | projectileSmoke   |   407 |   725 |     0.5614 |
 | fireBurn          |   604 |  1121 |     0.5388 |
 +-------------------+-------+-------+------------+
+```
+
+# kills by weapon, by game type
+```sql
+select weapon.name, count(*) as a from kill_logs join weapon on weapon_id = weapon.id join game_data on kill_logs.game_id = game_data.id join maps on game_data.map = maps.id where maps.type = 1 group by weapon_id order by a desc;
+select weapon.name, count(*) as a from kill_logs join weapon on weapon_id = weapon.id join game_data on kill_logs.game_id = game_data.id join maps on game_data.map = maps.id where maps.type = 2 group by weapon_id order by a desc;
+select weapon.name, count(*) as a from kill_logs join weapon on weapon_id = weapon.id join game_data on kill_logs.game_id = game_data.id join maps on game_data.map = maps.id where maps.type = 3 group by weapon_id order by a desc;
+```
+Arena:
+```
++-------------------+-------+
+| name              | a     |
++-------------------+-------+
+| rifle             | 18496 |
+| sniper            | 15141 |
+| katana            | 14028 |
+| dualUzi           | 12799 |
+| smg               | 10435 |
+| minigun           |  8799 |
+| shotgun           |  7643 |
+| dualpistol        |  6809 |
+| rocket            |  6773 |
+| revolver          |  6509 |
+| knife             |  6455 |
+| gauntlet          |  5246 |
+| arrow             |  4597 |
+| projectileGrenade |  4421 |
+| flamethrower      |  4349 |
+| fusionRifle       |  1890 |
+| crossbowBolt      |  1329 |
+| shuriken          |   688 |
+| fireBurn          |   613 |
+| projectileSmoke   |   435 |
+| riotShield        |   264 |
++-------------------+-------+
+```
+Hub:
+
+```
++-------------------+-------+
+| name              | a     |
++-------------------+-------+
+| katana            | 31680 |
+| knife             |  9460 |
+| rifle             |  8922 |
+| sniper            |  8219 |
+| gauntlet          |  5163 |
+| dualUzi           |  3986 |
+| smg               |  3705 |
+| shuriken          |  2257 |
+| shotgun           |  2134 |
+| minigun           |  1812 |
+| fusionRifle       |  1696 |
+| flamethrower      |  1612 |
+| dualpistol        |  1448 |
+| arrow             |  1093 |
+| rocket            |  1043 |
+| revolver          |   833 |
+| projectileGrenade |   765 |
+| riotShield        |   634 |
+| crossbowBolt      |   476 |
+| fireBurn          |   234 |
+| projectileSmoke   |    77 |
+| grappleHook       |    21 |
+| bow               |    20 |
++-------------------+-------+
+```
+
+BR:
+```
++-------------------+------+
+| name              | a    |
++-------------------+------+
+| rifle             | 4793 |
+| minigun           | 3034 |
+| smg               | 2586 |
+| knife             | 2029 |
+| shotgun           | 2028 |
+| sniper            | 1983 |
+| dualUzi           | 1641 |
+| dualpistol        | 1292 |
+| gauntlet          | 1094 |
+| fusionRifle       |  905 |
+| katana            |  697 |
+| flamethrower      |  657 |
+| revolver          |  544 |
+| arrow             |  505 |
+| rocket            |  447 |
+| projectileGrenade |  313 |
+| crossbowBolt      |  269 |
+| fireBurn          |   65 |
+| riotShield        |   64 |
+| shuriken          |   34 |
+| projectileSmoke   |    6 |
++-------------------+------+
 ```
