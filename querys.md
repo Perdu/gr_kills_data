@@ -397,3 +397,6 @@ DROP TEMPORARY TABLE temp_nb_deaths;
 8.5415
 
 Or just using above results 66205/7751.
+
+Distribution:
+![How many time do players who never get kills die before leaving, distribution](results/Deaths_before_leaving_distribution.png)
