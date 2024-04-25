@@ -401,3 +401,16 @@ Or just using above results 66205/7751.
 Distribution (removing extreme data as a few people died more than 100 times):
 
 ![How many time do players who never get kills die before leaving, distribution](results/Deaths_before_leaving_distribution.png)
+
+# How long do players who never get kills stay, on average?
+(Based on `last_death - first_death`)
+
+```sql
+CREATE TEMPORARY TABLE temp_nb_deaths AS select distinct killed_hash, MAX(kill_date) - MIN(kill_date) as duration from kill_logs where killed_hash not in (select unique killer_hash from kill_logs) group by killed_hash; SELECT AVG(duration) from temp_nb_deaths; DROP TEMPORARY TABLE temp_nb_deaths;
+```
+
+Distribution:
+![How long do players who never get kills stay, distribution](results/Duration_before_leaving_distribution.png)
+
+Filtering out players staying more than 3 hours, as it's more than the Quest's battery life:
+![How long do players who never get kills stay (when staying less than 3 hours), distribution](results/Duration_before_leaving_distribution_less_3h.png)
