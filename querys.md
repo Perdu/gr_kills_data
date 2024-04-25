@@ -410,6 +410,7 @@ CREATE TEMPORARY TABLE temp_nb_deaths AS select distinct killed_hash, MAX(kill_d
 ```
 
 Distribution:
+
 ![How long do players who never get kills stay, distribution](results/Duration_before_leaving_distribution.png)
 
 Filtering out players staying more than 3 hours, as it's more than the Quest's battery life:
